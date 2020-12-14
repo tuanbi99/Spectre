@@ -70,7 +70,7 @@ namespace Spectre.Forms
             btnSave2.Enabled = true;
             btnSelectImage2.Enabled = true;
             cboClassID.Enabled = false;
-            txtStudentID.ReadOnly = false;
+            txtStudentID.ReadOnly = true;
             txtImagePath2.ReadOnly = false;
             txtStudentName.ReadOnly = false;
             txtStudentPOB.ReadOnly = false;
@@ -236,79 +236,77 @@ namespace Spectre.Forms
                         MessageBox.Show(ex.ToString());
                     }
                 }
-
-                if (btnEdit2.Visible == false)
+            }
+            if (btnEdit2.Visible == false)
+            {
+                if (txtStudentID.Text.Trim().Length == 0)
                 {
-                    if (txtStudentID.Text.Trim().Length == 0)
+                    MessageBox.Show("Bạn phải nhập mã sinh viên ", "Thông báo",
+    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtStudentID.Focus();
+                    return;
+                }
+                if (txtStudentName.Text.Trim().Length == 0)
+                {
+                    MessageBox.Show("Bạn phải nhập tên sinh viên", "Thông báo",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtStudentName.Focus();
+                    return;
+                }
+                if (cboClassID.Text.Trim().Length == 0)
+                {
+                    MessageBox.Show("Bạn phải chọn mã lớp ", "Thông báo",
+    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    cboClassID.Focus();
+                    return;
+                }
+                try
+                {
+                    if (txtImagePath2.Text == "")
                     {
-                        MessageBox.Show("Bạn phải nhập mã sinh viên ", "Thông báo",
-        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        txtStudentID.Focus();
-                        return;
+                        string sql1 = "UPDATE SinhVien SET tenSV = @tenSV, queQuan = @queQuan, ngaySinh = @ngaySinh Where maSV= N'" + txtStudentID.Text + "'";
+                        var cmd1 = new SqlCommand(sql1, frmClass.Functions.Conn);
+                        cmd1.Parameters.AddWithValue("@tenSV", txtStudentName.Text);
+                        cmd1.Parameters.AddWithValue("@queQuan", txtStudentPOB.Text);
+                        cmd1.Parameters.AddWithValue("@ngaySinh", dtpStudentDOB.Value);
+                        cmd1.ExecuteNonQuery();
+                        cmd1.Dispose();
+                        cmd1 = null;
+                        ResetValues();
+                        MessageBox.Show("Sửa thông tin thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ResetButtons();
+                        Load_dgvStudent();
                     }
-                    if (txtStudentName.Text.Trim().Length == 0)
+                    else
                     {
-                        MessageBox.Show("Bạn phải nhập tên sinh viên", "Thông báo",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        txtStudentName.Focus();
-                        return;
-                    }
-                    if (cboClassID.Text.Trim().Length == 0)
-                    {
-                        MessageBox.Show("Bạn phải chọn mã lớp ", "Thông báo",
-        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        cboClassID.Focus();
-                        return;
-                    }
-                    try
-                    {
-                        if (txtImagePath2.Text == "")
-                        {
-                            string sql1 = "UPDATE SinhVien SET tenSV = @tenSV, queQuan = @queQuan, ngaySinh = @ngaySinh Where maLop= N'" + cboClassID.Text + "'";
-                            var cmd1 = new SqlCommand(sql1, frmClass.Functions.Conn);
-                            cmd1.Parameters.AddWithValue("@tenSV", txtStudentName.Text);
-                            cmd1.Parameters.AddWithValue("@queQuan", txtStudentPOB.Text);
-                            cmd1.Parameters.AddWithValue("@ngaySinh", dtpStudentDOB.Text);
-                            cmd1.ExecuteNonQuery();
-                            cmd1.Dispose();
-                            cmd1 = null;
-                            ResetValues();
-                            MessageBox.Show("Sửa thông tin thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            ResetButtons();
-                            Load_dgvStudent();
-                        }
-                        else
-                        {
 
-                            string sql2 = "UPDATE SinhVien SET tenSV = @tenSV, queQuan = @queQuan, ngaySinh = @ngaySinh, anhSV = @anhSV Where maLop= N'" + cboClassID.Text + "'"; ;
-                            var cmd2 = new SqlCommand(sql2, frmClass.Functions.Conn);
-                            cmd2.Parameters.AddWithValue("@tenSV", txtStudentName.Text);
-                            cmd2.Parameters.AddWithValue("@queQuan", txtStudentPOB.Text);
-                            cmd2.Parameters.AddWithValue("@ngaySinh", dtpStudentDOB.Text);
-                            cmd2.Parameters.AddWithValue("@anhSV", ConvertImagetobyte());
-                            cmd2.ExecuteNonQuery();
-                            cmd2.Dispose();
-                            cmd2 = null;
-                            ResetValues();
-                            MessageBox.Show("Sửa thông tin thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            ResetButtons();
-                            Load_dgvStudent();
-                        }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString());
+                        string sql2 = "UPDATE SinhVien SET tenSV = @tenSV, queQuan = @queQuan, ngaySinh = @ngaySinh, anhSV = @anhSV Where maSV= N'" + txtStudentID.Text + "'"; ;
+                        var cmd2 = new SqlCommand(sql2, frmClass.Functions.Conn);
+                        cmd2.Parameters.AddWithValue("@tenSV", txtStudentName.Text);
+                        cmd2.Parameters.AddWithValue("@queQuan", txtStudentPOB.Text);
+                        cmd2.Parameters.AddWithValue("@ngaySinh", dtpStudentDOB.Value);
+                        cmd2.Parameters.AddWithValue("@anhSV", ConvertImagetobyte());
+                        cmd2.ExecuteNonQuery();
+                        cmd2.Dispose();
+                        cmd2 = null;
+                        ResetValues();
+                        MessageBox.Show("Sửa thông tin thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ResetButtons();
+                        Load_dgvStudent();
                     }
                 }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
             }
-
 
         }
 
         private void btnEdit2_Click(object sender, EventArgs e)
         {
             UpdateStateButtons();
-            txtStudentID.Focus();
+            txtStudentName.Focus();
         }
 
         private void btnDelete2_Click(object sender, EventArgs e)
